@@ -2,7 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/myoan/go-calcurator/shunting_yard"
 	"github.com/myoan/go-calcurator/stack"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 type CalcType int
@@ -13,12 +17,34 @@ const (
 	Sub
 	Mul
 	Div
+	Pow
 	Eof
 )
 
 type Data struct {
 	tipe  CalcType
 	value int
+}
+
+func ToData(token string) Data {
+	numReg := regexp.MustCompile(`[0-9]+`)
+	if numReg.Match([]byte(token)) {
+		i, _ := strconv.Atoi(token)
+		return Data{tipe: Int, value: i}
+	} else {
+		if strings.Compare("^", token) == 0 {
+			return Data{tipe: Pow, value: 1}
+		} else if strings.Compare("*", token) == 0 {
+			return Data{tipe: Mul, value: 1}
+		} else if strings.Compare("/", token) == 0 {
+			return Data{tipe: Div, value: 1}
+		} else if strings.Compare("+", token) == 0 {
+			return Data{tipe: Add, value: 1}
+		} else if strings.Compare("-", token) == 0 {
+			return Data{tipe: Sub, value: 1}
+		}
+	}
+	return Data{}
 }
 
 func Calc(data []Data) int {
@@ -51,36 +77,13 @@ func Calc(data []Data) int {
 }
 
 func main() {
-	/*
-		data := []Data{
-			{tipe: Int, value: 5},
-			{tipe: Int, value: 2},
-			{tipe: Add, value: 1},
-		}
-	*/
-
-	// (5 + 2) * 3
-	/*
-		data := []Data{
-			{tipe: Int, value: 5},
-			{tipe: Int, value: 2},
-			{tipe: Add, value: 1},
-			{tipe: Int, value: 3},
-			{tipe: Mul, value: 1},
-			{tipe: Eof, value: 1},
-		}
-	*/
-	// (5 + 2) * (3 - 1)
-	data := []Data{
-		{tipe: Int, value: 5},
-		{tipe: Int, value: 2},
-		{tipe: Add, value: 1},
-		{tipe: Int, value: 3},
-		{tipe: Int, value: 1},
-		{tipe: Sub, value: 1},
-		{tipe: Mul, value: 1},
-		{tipe: Eof, value: 1},
+	strData := []string{"3", "+", "2", "-", "1", "*", "2"}
+	rpnData := shunting_yard.ToRpn(strData)
+	fmt.Println("RPN:", rpnData)
+	data := []Data{}
+	for _, d := range rpnData {
+		data = append(data, ToData(d))
 	}
-
+	fmt.Println(data)
 	fmt.Println(Calc(data))
 }
