@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/myoan/go-calcurator/shunting_yard"
 	"github.com/myoan/go-calcurator/stack"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -77,13 +79,22 @@ func Calc(data []Data) int {
 }
 
 func main() {
-	strData := []string{"3", "+", "2", "-", "1", "*", "2"}
-	rpnData := shunting_yard.ToRpn(strData)
-	fmt.Println("RPN:", rpnData)
-	data := []Data{}
-	for _, d := range rpnData {
-		data = append(data, ToData(d))
+	var sc = bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print("> ")
+		var str = ""
+		if sc.Scan() {
+			str = sc.Text()
+		}
+		if strings.Compare("q", str) == 0 {
+			break
+		}
+		tokens := strings.Fields(str)
+		rpnData := shunting_yard.ToRpn(tokens)
+		data := []Data{}
+		for _, d := range rpnData {
+			data = append(data, ToData(d))
+		}
+		fmt.Println(Calc(data))
 	}
-	fmt.Println(data)
-	fmt.Println(Calc(data))
 }

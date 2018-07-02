@@ -1,7 +1,6 @@
 package shunting_yard
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -22,16 +21,12 @@ func (ps *ParseStack) IsEmpty() bool {
 func (ps *ParseStack) Pop() string {
 	result := ps.stack[ps.index-1]
 	ps.index = ps.index - 1
-	fmt.Println("Pop:", result)
-	fmt.Println(ps)
 	return result
 }
 
 func (ps *ParseStack) Push(r string) {
 	ps.stack[ps.index] = r
 	ps.index = ps.index + 1
-	fmt.Println("Push:", r)
-	fmt.Println(ps)
 }
 
 type ShuntingYard struct {
@@ -40,8 +35,6 @@ type ShuntingYard struct {
 }
 
 func (sy *ShuntingYard) Add(d string) {
-	fmt.Println("numQueue:", sy.numQueue)
-	fmt.Println("oprStack:", sy.oprStack)
 	numReg := regexp.MustCompile(`[0-9]+`)
 	if numReg.Match([]byte(d)) {
 		sy.numQueue = append(sy.numQueue, d)
